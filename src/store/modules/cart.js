@@ -6,8 +6,8 @@ const state = {
     checkoutStatus: null
 }
 
-const getter = {
-    cartProducts:(state,rootState) =>{
+const getters = {
+    cartProducts:(state,getters,rootState) =>{
         return state.items.map(({id,quantity}) =>{
             const product = rootState.products.all.find( product => product.id === id)
             return {
@@ -17,8 +17,9 @@ const getter = {
             }
         })
     },
-    carTotalPrice:(state,getter) => {
-        return getter.cartProducts.reduce((product,total)=>{
+    cartTotalPrice:(state,getters) => {
+        return getters.cartProducts.reduce((total,product)=>{
+            // 这里的顺序还不能换，换了就错了
             return total + product.price * product.quantity
         },0)
     }
@@ -26,12 +27,13 @@ const getter = {
 
 const actions = {
     checkout({state,commit},products){
+        //不明白这里的products是通过什么传递过来的，恼火
         const saveCartItems = [...state.items]
         commit(CART.SET_CART_ITEMS,{items:[]})
         commit(CART.SET_CHECKOUT_STATUS,null)
         shop.buyProducts(
             products,
-            ()=>commit(CART.SET_CHECKOUT_STATUS,'sucesseful'),
+            ()=>commit(CART.SET_CHECKOUT_STATUS,'successful'),
             ()=>{
                 commit(CART.SET_CHECKOUT_STATUS,'failed'),
                 commit(CART.SET_CART_ITEMS,{items:saveCartItems})
@@ -46,13 +48,12 @@ const actions = {
             if(!cartItem){
                 commit(CART.PUSH_PRODUCT_TO_CART,{id:product.id})
             }else{
-                commit(CART.INCREMENT_ITEM_QUANTITY,{id:item.id})
+                commit(CART.INCREMENT_ITEM_QUANTITY,cartItem)
                 // 注意这里有所不同
             }
-            commit(`product/${PRODUCTS.DECREMENT_PRODUCT_INVENTORY}`,{id:product.id},{root:true})
+            commit(`products/${PRODUCTS.DECREMENT_PRODUCT_INVENTORY}`,{id:product.id},{root:true})
         }
     }
-
 }
 
 const mutations = {
@@ -76,7 +77,7 @@ const mutations = {
 export default {
     namespaced: true,
     state,
-    getter,
+    getters,
     actions,
     mutations,
 }
