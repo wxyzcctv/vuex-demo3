@@ -5,6 +5,7 @@
             <li v-for="product in products"
                 :key="product.id">
                 {{ product.title }} - {{ product.price }} × {{product.quantity }}
+                <input type="text" v-model="product.quantity">
             </li>
         </ul>
         <p>合计：{{ total }}</p>

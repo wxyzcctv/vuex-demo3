@@ -33,10 +33,10 @@ const mutations = {
     state.all = products
   },
 
-  [PRODUCTS.DECREMENT_PRODUCT_INVENTORY] (state, { id }) {
+  [PRODUCTS.DECREMENT_PRODUCT_INVENTORY] (state, { id , number}) {
     const product = state.all.find(product => product.id === id)
     // find()的用法是arr.find(function(){})找出指定数组中通过find函数中筛选的内容
-    product.inventory--
+    product.inventory -= number
   }
 }
 
